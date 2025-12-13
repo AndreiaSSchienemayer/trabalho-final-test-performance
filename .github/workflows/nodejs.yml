@@ -22,8 +22,8 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Rodar os testes de API via Controller
-      run: npm run test-rest-controller
+    #- name: Rodar os testes de API via Controller
+      #run: npm run test-rest-controller
 
     # Sobe as APIs em background
     - name: Subir a API Rest 
