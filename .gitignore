@@ -1,3 +1,6 @@
 node_modules/
 mochawesome-report/
 .env
+test-reports/
+*.log
+.vscode

@@ -1,10 +1,10 @@
-name: Node.js CI
+name: testes_Performance.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -25,6 +25,7 @@ jobs:
     - name: Rodar os testes de API via Controller
       run: npm run test-rest-controller
 
+    # Sobe as APIs em background
     - name: Subir a API Rest 
       run: npm run start-rest &
 
@@ -34,6 +35,7 @@ jobs:
     - name: Esperar as APIs estarem Funcionando
       run: sleep 8
 
+    # Cria o arquivo .env com as URLs (importante se seu K6 lê daqui também)
     - name: Criar .env
       run: |
         echo "BASE_URL_REST=${{ secrets.BASE_URL_REST }}" >> .env
@@ -44,3 +46,18 @@ jobs:
 
     - name: Rodar os testes External de API GraphQL via HTTP
       run: npm run test-graphql-external
+
+    - name: Setup K6
+      uses: grafana/setup-k6-action@v1
+
+    - name: Rodar Testes de Performance K6      
+      run: k6 run -e BASE_URL=http://localhost:3000 test/k6/performance.test.js
+
+    - name: Upload Relatório de Performance
+      # O "if: always()" garante que o relatório seja salvo mesmo se o teste falhar (threshold estourar)
+      if: always() 
+      uses: actions/upload-artifact@v4
+      with:
+        name: relatorio-k6
+        path: relatorio_teste.html
+        retention-days: 30
