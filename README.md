@@ -24,7 +24,8 @@ Siga os passos abaixo para ter a API rodando em sua máquina local.
 ### Clone o Repositório
 
 git clone https://github.com/AndreiaSSchienemayer/trabalho-final-test-performance
-cd trabalho-final-test-performance # Ajuste o nome da pasta conforme a clonagem
+cd trabalho-final-test-performance # 
+Ajuste o nome da pasta conforme a clonagem
 
 ### Instale as Dependências
 
@@ -293,3 +294,6 @@ export function fluxoDeLogin(baseUrl, username) {
     // 
 }
 ```
+
+### Relatórios 
+Dentro de ...\Automacao_de_Testes_de_Performance\trabalho-final-test-performance tem o arquivo "relatorio_teste_final.html"

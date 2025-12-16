@@ -4,7 +4,8 @@ import { Trend } from 'k6/metrics';
 import { SharedArray } from 'k6/data'; 
 import { nameFaker, randomNameFavorecido } from './helpers/utils.js';
 import { BASE_URL } from './helpers/getBaseUrl.js';
-import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/2.4.0/dist/bundle.js'; // Usando uma versão fixa
+//import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 
 const listaDeValores = new SharedArray('valores do arquivo', function () {
@@ -129,8 +130,20 @@ export default function() {
 }
 
 export function handleSummary(data) {
-  return {
-    "relatorio_teste.html": htmlReport(data), // Gera o arquivo HTML
-    stdout: textSummary(data, { indent: " ", enableColors: true }), // Exibe no console (terminal)
-  };
+    // Gerar o resumo de texto (é o que sempre funciona)
+    const summaryText = textSummary(data, { indent: " ", enableColors: false }); 
+    
+    // Tenta gerar o HTML, mas o foco é o arquivo de texto
+    const htmlReportContent = htmlReport(data);
+
+    return {
+        // Opção A: Tenta salvar o HTML (pode falhar)
+        "relatorio_teste_final.html": htmlReportContent, 
+        
+        // Opção B: Salva o resumo de texto formatado como um TXT (GARANTIDO)
+        "relatorio_resumo_performance.txt": summaryText, 
+        
+        // Imprime o texto no console para feedback imediato
+        stdout: summaryText, 
+    };
 }
