@@ -42,109 +42,254 @@ Como parte da avaliação final da Pós-Graduação em Automação de Testes, fo
 Os arquivos dos testes de performance estão organizados no diretório test/k6/ 
 
 ```text
-.
-├── node_modules/           # Dependências instaladas pelo npm
-├── test/
-│   └── k6/                 # Diretório principal de Testes de Performance (k6)
-│       ├── data/           # Massa de Dados (Data-Driven Testing - DDT)
-│       │   ├── login.test.data.json  # Dados para testes de Login
-│       │   └── valores.json          # Massa de dados para valores de transferência
-│       ├── helpers/        # Módulos auxiliares
-│       │   ├── getBaseUrl.js       # Configuração da URL base do ambiente
-│       │   └── utils.js            # Funções helpers (Faker, geradores de dados)
-│       └── modules/        # Scripts de Teste
-│           ├── performance.test.js # Script principal com Stages e Thresholds
-│           ├── relatorio.html      # Relatório final gerado pelo k6-reporter
-│           └── transferencia.test.js # Script(s) auxiliar(es) para o fluxo de transferência
-├── .env                    # Variáveis de ambiente (BASE_URL_REST, BASE_URL_GRAPHQL)
-├── .gitignore              # Arquivos ignorados pelo Git
-├── package.json            # Metadados do projeto e scripts (ex: npm start)
-├── package-lock.json       # Registro exato das dependências
-├── server.js (ou index.js) # Ponto de entrada da aplicação Express/API
-└── README.md               # Este arquivo
+trabalho-final-test-performance/
+└── test/
+    └── k6/
+        ├── performance.test.js 
+        │   # O ORQUESTRADOR do teste k6 run (k6 run test/k6/performance.test.js)
+        │   
+        ├── data/
+        │   ├── login.test.data.json
+        │   └── valores.json
+        │
+        ├── helpers/
+        │   ├── getBaseUrl.js
+        │   └── utils.js
+        │
+        └── modules/
+            ├── cadastro.modules.js
+            ├── login.modules.js
+            └── transferencia.modules.js
 ```
 
-## Aplicação dos Conceitos (Evidências)Demonstração de como os conceitos de testes de performance foram aplicados no código.
+## Aplicação dos Conceitos (Evidências)
+Demonstração de como os conceitos de testes de performance foram aplicados no código.
 
 
-1. Stages (Carga Variável)Simulamos um comportamento de tráfego real (Ramp-up, Carga Sustentada, Ramp-down) usando a configuração de stages:DuraçãoAlvo (VUs)Descrição5s50Ramp-up: Subida gradual de 0 a 50 usuários em 5 segundos.10s100Carga Sustentada: Mantém 100 usuários por 10 segundos.5s0Ramp-down: Desconexão de todos os usuários em 5 segundos.JavaScript// Arquivo: .../test/k6/performance.test.js
-stages: [
-    { duration: '5s', target: 50 },
-    { duration: '10s', target: 100 },
-    { duration: '5s', target: 0 }
-]
+### 1. Stages (Carga Variável)
+Define as fases de carga do teste (aquecimento, estabilidade e rampa descendente) para simular o comportamento de usuários ao longo do tempo.
 
-2. Thresholds (Critérios de Aceite)Definição de limites de qualidade. O teste falhará se qualquer um destes critérios for violado:Tempo de Resposta: 95% das requisições devem demorar no máximo 2 segundos (2000ms).Taxa de Erro: A taxa de requisições falhas deve ser inferior a 1%.JavaScript// Arquivo: .../test/k6/performance.test.js
-thresholds: {
-    'http_req_duration': ['p(95)<=2000'], // p(95) é o 95º percentil
-    'http_req_failed': ['rate<0.01'],    // taxa de falha < 1%
-}
+Localização: test/k6/performance.test.js
 
-3. Helpers e 
+```text
+export const options = {    
+    stages: [
+        // RAMP UP: Sobe de 0 VUs para 30 VUs em 5 segundos 
+        { duration: '5s', target: 30 }, 
+        // STEADY STATE: Mantém 30 VUs por 10 segundos
+        { duration: '10s', target: 30 },
+        // RAMP DOWN: Desce de 30 VUs para 0 VUs em 5 segundos 
+        { duration: '5s', target: 0 },
+    ],
+    // ...
+};
+```
 
 
-4. FakerUtilizamos funções auxiliares (helpers/utils.js) e a biblioteca Faker para gerar dados de usuário dinâmicos (nomes, emails, etc.) de forma eficiente, garantindo que cada iteração de teste use dados únicos.JavaScript// test/k6/helpers/utils.js - Exemplo de uso do Faker
-import faker from '[https://unpkg.com/faker@5.5.3/dist/faker.js](https://unpkg.com/faker@5.5.3/dist/faker.js)';
+### 2. Thresholds (Critérios de Aceite)Definição de limites de qualidade. 
+Define critérios de aprovação (SLA) para as métricas de performance. Se a execução não satisfizer estas condições, o teste falhará.
 
-export function nameFaker() {
+Localização: test/k6/performance.test.js
+
+```text
+export const options = {
+    // ...
+    thresholds: {
+        // Taxa de falha HTTP deve ser menor que 0.1% (Idealmente 0%)
+        'http_req_failed': ['rate<0.001'], 
+        
+        // 95% das requisições de Login devem responder em menos de 1500ms (1.5 segundos)
+        'taxa_login_duration': ['p(95)<1500'], 
+    },
+};
+
+```
+
+### 3. Checks 
+Verificações funcionais que validam a resposta de uma requisição HTTP. No fluxo de Login, garantimos que a API responde com sucesso (200 OK) e inclui o token JWT.
+
+Localização: test/k6/modules/login.modules.js
+
+```text
+const loginSucceeded = check(responseLogin, {
+    // Checa se o status HTTP é 200
+    'Login - Status 200 OK': (r) => r.status === 200, 
+    // Checa se o corpo da resposta possui o campo 'token'
+    'Login - Token presente': (r) => r.json('token') !== undefined 
+});
+```
+
+
+### 4. Groups (Grupos)
+Organiza o fluxo de teste em blocos lógicos, permitindo medir a duração de cada etapa (ex: tempo gasto apenas no Cadastro) e tornando o relatório mais claro.
+
+Localização: test/k6/modules/cadastro.modules.js
+```text
+    group('0. Preparação (Criar Favorecido)', function() {
+            const payloadFavorecido = JSON.stringify({
+                username: favored,
+                password: PASSWORD
+            });
+            http.post(`${baseUrl}/users/register`, payloadFavorecido, paramsJson);
+        });
+
+        // 1. Fluxo de Cadastro (POST /users/register)
+        group('1. Fluxo de Cadastro (POST /users/register)', function() {
+            const payload = JSON.stringify({
+                username: username,
+                password: PASSWORD,
+                favorecidos: [favored]
+            });
+
+```
+
+
+
+### 5. Helpers (Funções Auxiliares)
+Implementado através de módulos separados (helpers/) para promover o reuso de lógica, como a geração de URLs e dados.
+
+Localização: test/k6/performance.test.js e helpers/getBaseUrl.js e helpers/utils.js
+
+```text
+import { nameFaker, randomNameFavorecido } from './helpers/utils.js'; 
+// O Helper para obter a URL base
+import { BASE_URL } from './helpers/getBaseUrl.js';
+```
+
+
+
+Arquivo utils.js: 
+```text
+import faker from 'https://unpkg.com/faker@5.5.3/dist/faker.js';
+
+export function nameFaker() {    
     const firstName = faker.name.firstName();
-    // ... lógica de randomização
+    const uniqueId = Date.now(); 
+    const random = Math.floor(Math.random() * 1000);
+    
     return `${firstName}${uniqueId}_${random}`;
 }
 
 
-5. Data-Driven Testing (DDT)O valor das transferências é variado lendo uma massa de dados externa do arquivo data/valores.json usando SharedArray para otimizar o carregamento.JavaScript// Arquivo: .../test/k6/performance.test.js
+```text
+export function randomNameFavorecido() {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    
+    return `Arthur${timestamp}_${random}`;
+}
+```
+
+Arquivo getBaseUrl.js: 
+```text
+// Obtém a BASE_URL da variável de ambiente
+export function BASE_URL () {
+    return __ENV.BASE_URL || 'http://localhost:3000';
+}
+```
+
+### 6. Variável de Ambiente
+A URL base da API é configurada para ser lida da variável de ambiente (__ENV.BASE_URL), permitindo que o ambiente de teste seja alternado sem modificar o código.
+
+Localização: test/k6/helpers/getBaseUrl.js
+
+```text
+export const BASE_URL = () => {
+    return __ENV.BASE_URL || 'http://localhost:3000';
+};
+```
+
+
+### 7. Data-Driven Testing (DDT)
+Utiliza um arquivo JSON externo (data/valores.json) para fornecer dados de teste (valores de transferência) aos VUs de forma iterativa e balanceada (SharedArray).
+
+Localização: test/k6/performance.test.js
+
+```text
 const listaDeValores = new SharedArray('valores do arquivo', function () {
-    return JSON.parse(open('./data/valores.json'));
+    // Leitura do arquivo JSON. O caminho é relativo ao k6 run (test/k6/data/valores.json)
+    return JSON.parse(open('./data/valores.json')); 
 });
-// Uso no teste: const valorDoArquivo = listaDeValores[indice].valor;
+// ...
+export default function() {
+    // Seleciona o valor com base no VU ID, garantindo distribuição.
+    const indice = (__VU - 1) % listaDeValores.length; 
+    const valorDoArquivo = listaDeValores[indice].valor; 
 
+    const TRANSFER_DATA = {
+        // ...
+        value: valorDoArquivo // Uso do dado externo
+    };
+    // ...
+}
+```
 
-6. GroupsO fluxo lógico do usuário é organizado em blocos nomeados (Groups) para facilitar a leitura dos relatórios e a análise do tempo gasto em cada etapa.JavaScript// Arquivo: .../test/k6/performance.test.js
-group('1. Fluxo de Cadastro', function() { ... });
-group('2. Fluxo de Login', function() { ... });
-group('3. Fluxo de Transferência', function() { ... });
+### 8. Faker (Geração de Dados Falsos)
+A geração de dados únicos para username e favorecido é realizada no Helper utils.js usando funções nativas para simular a unicidade (Timestamp + Random ID).
 
+Localização: test/k6/helpers/utils.js
 
-7. Uso de Token de Autenticação e 
-
-
-8. Reaproveitamento de RespostaO Token JWT retornado na resposta da requisição de Login é capturado e injetado no cabeçalho (Authorization) da requisição subsequente de Transferência.JavaScript// Arquivo: .../test/k6/performance.test.js
-// Captura
-if (loginSucceeded) { 
-    authToken = responseLogin.json('token'); 
+```text
+// ...
+export function nameFaker() {    
+    // Cria um ID único, garantindo que cada VU se cadastre com um nome diferente
+    const timestamp = Date.now().toString(36); 
+    const random = Math.random().toString(36).substring(2, 8);
+    return `User_${timestamp}_${random}`;
 }
 
-// Reutilização no Header
-const transferParams = { 
-    headers: { 
+export function randomNameFavorecido() {
+    // Cria um nome único para o Favorecido
+    // ...
+}
+```
+
+### 9. Reaproveitamento de Resposta e 10. Uso de Token de Autenticação
+O token JWT retornado pelo Login é capturado (Reaproveitamento de Resposta) e, em seguida, inserido no header Authorization do fluxo de Transferência (Uso de Token de Autenticação).
+
+Localização: test/k6/performance.test.js
+
+```text
+// Captura o token retornado pelo módulo de Login
+let authToken = fluxoDeLogin(baseUrl, USERNAME); 
+
+// Passa o token capturado para a Transferência
+fluxoDeTransferencia(baseUrl, authToken, TRANSFER_DATA);
+
+```
+
+
+
+Localização: test/k6/modules/transferencia.module.js (Uso do Token)
+```text
+// ...
+const transferParams = {
+    headers: {
+        'Content-Type': 'application/json', 
+        // O token é usado no formato Bearer
         'Authorization': `Bearer ${authToken}` 
-    } 
+    }
 };
+// ...
+```
 
+### 11. Trends (Métricas Customizadas)
+Uma métrica Trend foi declarada e utilizada para isolar e rastrear especificamente o tempo de resposta do fluxo de Login, permitindo uma análise mais focada desta etapa crítica.
 
-9. ChecksUtilizamos Checks para validar a corretude das respostas além do status code HTTP, garantindo que o corpo da resposta contenha dados esperados (ex: a presença do token no login).JavaScript// Arquivo: .../test/k6/performance.test.js
-check(responseLogin, {
-    'Login - Status 200 OK': (r) => r.status === 200,
-    'Login - Token presente': (r) => r.json('token') !== undefined 
-});
+Localização: test/k6/modules/login.modules.js
 
+```text
+import { Trend } from 'k6/metrics';
 
-10. Trends (Métricas Customizadas)Criamos uma métrica customizada chamada taxa_login_duration utilizando new Trend() para monitorar o tempo de resposta exclusivo da transação de Login, separando-a das métricas padrão.JavaScript// Arquivo: .../test/k6/performance.test.js
+// Declara a métrica customizada que será usada nos Thresholds
 const loginTrend = new Trend('taxa_login_duration'); 
 // ...
-loginTrend.add(responseLogin.timings.duration);
+export function fluxoDeLogin(baseUrl, username) {
+    // ...
+    const responseLogin = http.post(loginUrl, loginPayload, paramsJson);
 
-
-11. Variável de AmbienteA URL base da API é configurada de forma dinâmica usando a variável de ambiente __ENV.BASE_URL, permitindo rodar o mesmo teste em diferentes ambientes (local, staging, pipeline CI/CD).JavaScript// test/k6/helpers/getBaseUrl.js
-return __ENV.BASE_URL || 'http://localhost:3000';
-
-
-### Como Rodar o Teste de Performance Localmente
-Inicie a API em um terminal (é necessário para que o teste se conecte):Bashnpm start
-Rode o Teste de Performance em um segundo terminal:Bashk6 run test/k6/performance.test.js
-
-
-### Relatório e Pipeline CI/CDO projeto possui recursos de relatório e integração contínua:
-Relatório HTML: Ao final de cada execução, um relatório detalhado em HTML (relatorio_teste.html) é gerado automaticamente, utilizando o k6-reporter.
-GitHub Actions: O teste está integrado ao CI/CD. Ele roda automaticamente a cada Push/Pull Request na branch principal, gerando o relatório HTML como um artefato de build para revisão.
+    // Adiciona a duração da requisição (responseLogin.timings.duration) à Trend
+    loginTrend.add(responseLogin.timings.duration); 
+    // 
+}
+```
