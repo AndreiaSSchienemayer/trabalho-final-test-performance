@@ -30,26 +30,39 @@ cd trabalho-final-test-performance # Ajuste o nome da pasta conforme a clonagem
 
 npm install
 
-Configuração de AmbienteCrie um arquivo chamado .env na pasta raiz do projeto. Ele será usado para configurar a URL base da API (e de um eventual GraphQL, se aplicável). 
-
-Conteúdo do arquivo .env:BASE_URL_REST=http://localhost:3000
-BASE_URL_GRAPHQL=http://localhost:3000/graphql 
-
 ### Como Rodar a API Para iniciar o servidor
 API Disponível em: http://localhost:3000 
 
-Documentação Swagger (OpenAPI): http://localhost:3000/api-docs
+Documentação Swagger: http://localhost:3000/api-docs
 
-Testes de Performance com k6Como parte da avaliação final da Pós-Graduação em Automação de Testes, foi implementada uma suíte robusta de testes de performance utilizando k6.
+### Testes de Performance com k6
+Como parte da avaliação final da Pós-Graduação em Automação de Testes, foi implementada uma suíte de testes de performance utilizando k6.
 
-Arquitetura dos TestesOs arquivos dos testes de performance estão organizados no diretório test/k6/ para fácil manutenção e leitura.test/k6/
+### Arquitetura dos Testes
+Os arquivos dos testes de performance estão organizados no diretório test/k6/ 
 
-├── performance.test.js # Script principal com o fluxo de teste.
-├── helpers/
-│   ├── utils.js        # Funções auxiliares (Faker para dados, etc.).
-│   └── getBaseUrl.js   # Lógica para carregar a URL base do ambiente.
-└── data/
-    └── valores.json    # Massa de dados para o Data-Driven Testing.
+```text
+.
+├── node_modules/           # Dependências instaladas pelo npm
+├── test/
+│   └── k6/                 # Diretório principal de Testes de Performance (k6)
+│       ├── data/           # Massa de Dados (Data-Driven Testing - DDT)
+│       │   ├── login.test.data.json  # Dados para testes de Login
+│       │   └── valores.json          # Massa de dados para valores de transferência
+│       ├── helpers/        # Módulos auxiliares
+│       │   ├── getBaseUrl.js       # Configuração da URL base do ambiente
+│       │   └── utils.js            # Funções helpers (Faker, geradores de dados)
+│       └── modules/        # Scripts de Teste
+│           ├── performance.test.js # Script principal com Stages e Thresholds
+│           ├── relatorio.html      # Relatório final gerado pelo k6-reporter
+│           └── transferencia.test.js # Script(s) auxiliar(es) para o fluxo de transferência
+├── .env                    # Variáveis de ambiente (BASE_URL_REST, BASE_URL_GRAPHQL)
+├── .gitignore              # Arquivos ignorados pelo Git
+├── package.json            # Metadados do projeto e scripts (ex: npm start)
+├── package-lock.json       # Registro exato das dependências
+├── server.js (ou index.js) # Ponto de entrada da aplicação Express/API
+└── README.md               # Este arquivo
+```
 
 ## Aplicação dos Conceitos (Evidências)Demonstração de como os conceitos de testes de performance foram aplicados no código.
 
