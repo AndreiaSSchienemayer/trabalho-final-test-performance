@@ -12,7 +12,7 @@
     {
         "nomeDoTeste": "Remetente não encontrado",
         "postTransfer": {
-            "from": "Ivonei",
+            "from": "Usuario_Inexistente_X", 
             "to": "Andreia",
             "value": 15
         },
@@ -23,7 +23,7 @@
         "nomeDoTeste": "Destinatário não encontrado",
         "postTransfer": {
             "from": "Andreia",
-            "to": "Ivonei",
+            "to": "Usuario_Inexistente_Y",
             "value": 15
         },
         "statusCode": 400,
