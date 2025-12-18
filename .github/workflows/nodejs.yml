@@ -54,10 +54,11 @@ jobs:
       run: k6 run -e BASE_URL=http://localhost:3000 test/k6/performance.test.js
 
     - name: Upload Relatório de Performance
-      # O "if: always()" garante que o relatório seja salvo mesmo se o teste falhar (threshold estourar)
       if: always() 
       uses: actions/upload-artifact@v4
       with:
         name: relatorio-k6
-        path: relatorio_teste.html
+        path: |
+          relatorio_teste.html
+          relatorio_performance_visual.html
         retention-days: 30
