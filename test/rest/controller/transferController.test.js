@@ -60,7 +60,7 @@ describe('Transfer Controller', () => {
                 .set('Authorization', `Bearer ${token}`)
                 .send({
                     from: "Andreia",
-                    to: "Arthur",
+                    to: "Arthur1",
                     value: 100
                 });
             

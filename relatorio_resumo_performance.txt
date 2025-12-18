@@ -15,22 +15,22 @@
 
      █ Simulando o pensamento do usuário
 
-   ✓ checks.........................: 100.00% ✓ 1524      ✗ 0    
-     data_received..................: 580 kB  28 kB/s
-     data_sent......................: 394 kB  19 kB/s
-     group_duration.................: avg=683.4ms   min=506.1µs med=742.71ms max=2.02s     p(90)=1s        p(95)=1.05s    
-     http_req_blocked...............: avg=52.78µs   min=0s      med=0s       max=10.44ms   p(90)=0s        p(95)=522.37µs 
-     http_req_connecting............: avg=33.14µs   min=0s      med=0s       max=1.66ms    p(90)=0s        p(95)=0s       
-   ✓ http_req_duration..............: avg=603.24ms  min=503.7µs med=634ms    max=2.02s     p(90)=1.02s     p(95)=1.07s    
-       { expected_response:true }...: avg=603.24ms  min=503.7µs med=634ms    max=2.02s     p(90)=1.02s     p(95)=1.07s    
-   ✓ http_req_failed................: 0.00%   ✓ 0         ✗ 1524 
-     http_req_receiving.............: avg=346.27µs  min=0s      med=0s       max=13.85ms   p(90)=923.67µs  p(95)=1.67ms   
-     http_req_sending...............: avg=101.98µs  min=0s      med=0s       max=14.77ms   p(90)=0s        p(95)=381.77µs 
-     http_req_tls_handshaking.......: avg=0s        min=0s      med=0s       max=0s        p(90)=0s        p(95)=0s       
-     http_req_waiting...............: avg=602.79ms  min=503.7µs med=634ms    max=2.02s     p(90)=1.02s     p(95)=1.07s    
-     http_reqs......................: 1524    73.52978/s
-     iteration_duration.............: avg=3.41s     min=1.05s   med=3.58s    max=5.66s     p(90)=4.99s     p(95)=5.08s    
-     iterations.....................: 381     18.382445/s
-   ✓ taxa_login_duration............: avg=594.59014 min=3.6226  med=622.9669 max=1139.3996 p(90)=1026.0691 p(95)=1055.0203
-     vus............................: 33      min=1       max=100
+   ✓ checks.........................: 100.00% ✓ 1232      ✗ 0    
+     data_received..................: 469 kB  22 kB/s
+     data_sent......................: 318 kB  15 kB/s
+     group_duration.................: avg=888.78ms   min=994.9µs  med=1s       max=2.69s     p(90)=1.35s      p(95)=1.42s      
+     http_req_blocked...............: avg=115.35µs   min=0s       med=0s       max=66.94ms   p(90)=0s         p(95)=534.25µs   
+     http_req_connecting............: avg=41.92µs    min=0s       med=0s       max=2.8ms     p(90)=0s         p(95)=508.7µs    
+   ✓ http_req_duration..............: avg=859.22ms   min=994.9µs  med=904.3ms  max=2.69s     p(90)=1.39s      p(95)=1.43s      
+       { expected_response:true }...: avg=859.22ms   min=994.9µs  med=904.3ms  max=2.69s     p(90)=1.39s      p(95)=1.43s      
+   ✓ http_req_failed................: 0.00%   ✓ 0         ✗ 1232 
+     http_req_receiving.............: avg=696.89µs   min=0s       med=0s       max=29.12ms   p(90)=2.09ms     p(95)=3.91ms     
+     http_req_sending...............: avg=36.27µs    min=0s       med=0s       max=5.17ms    p(90)=0s         p(95)=0s         
+     http_req_tls_handshaking.......: avg=0s         min=0s       med=0s       max=0s        p(90)=0s         p(95)=0s         
+     http_req_waiting...............: avg=858.49ms   min=508.29µs med=904.15ms max=2.69s     p(90)=1.39s      p(95)=1.43s      
+     http_reqs......................: 1232    57.608536/s
+     iteration_duration.............: avg=4.44s      min=1.06s    med=4.67s    max=7.07s     p(90)=6.29s      p(95)=6.4s       
+     iterations.....................: 308     14.402134/s
+   ✓ taxa_login_duration............: avg=850.605954 min=13.7005  med=907.461  max=1492.7956 p(90)=1361.74653 p(95)=1428.227495
+     vus............................: 25      min=0       max=100
      vus_max........................: 100     min=100     max=100
