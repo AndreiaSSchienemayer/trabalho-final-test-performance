@@ -24,6 +24,7 @@ describe('Transfer', () => {
             const postTransfer = require('../fixture/requisicoes/transferencias/postTransfer.json');
             
             const resposta = await request(process.env.BASE_URL_REST)
+            //const resposta = await request(process.env.BASE_URL_REST || 'http://localhost:3000')
                 .post('/transfers')
                 .set('Authorization', `Bearer ${token}`)
                 .send(postTransfer);

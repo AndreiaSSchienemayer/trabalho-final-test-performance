@@ -38,8 +38,8 @@ jobs:
     # Cria o arquivo .env com as URLs (importante se seu K6 lê daqui também)
     - name: Criar .env
       run: |
-        echo "BASE_URL_REST=${{ secrets.BASE_URL_REST }}" >> .env
-        echo "BASE_URL_GRAPHQL=${{ secrets.BASE_URL_GRAPHQL }}" >> .env
+        echo "BASE_URL_REST=${{ vars.BASE_URL_REST }}" >> .env
+        echo "BASE_URL_GRAPHQL=${{ vars.BASE_URL_GRAPHQL }}" >> .env
 
     - name: Rodar os testes External de API Rest via HTTP
       run: npm run test-rest-external
