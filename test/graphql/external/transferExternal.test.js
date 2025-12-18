@@ -10,7 +10,8 @@ describe('Testes de Transferência', () => {
     
     before(async () => {
         const loginUser = require('../fixture/requisicoes/login/loginUser.json');
-        const resposta = await request(process.env.BASE_URL_GRAPHQL)
+        //const resposta = await request(process.env.BASE_URL_GRAPHQL)
+        const resposta = await request(process.env.BASE_URL_GRAPHQL || 'http://localhost:4000/graphql')
             .post('')
             .send(loginUser);
 
