@@ -296,4 +296,5 @@ export function fluxoDeLogin(baseUrl, username) {
 ```
 
 ### Relatórios 
-Dentro de ...\Automacao_de_Testes_de_Performance\trabalho-final-test-performance tem o arquivo "relatorio_teste_final.html"
+Em https://github.com/AndreiaSSchienemayer/trabalho-final-test-performance/actions será gerado um artifact com o relatório referente ao que foi executado. 
+Também tem ...\trabalho-final-test-performance\relatorios o relatório exportado enquanto desenvolvida o trabalho.
